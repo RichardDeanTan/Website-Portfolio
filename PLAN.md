@@ -283,9 +283,11 @@ Every text and accent pairing must meet WCAG AA contrast (4.5:1). This gets chec
 - [x] OG image, favicon, meta description, robots.txt (`npm run brand` regenerates the images)
 
 ### Phase 4 — Ship
-- [ ] `npm run build` with zero type errors (`astro check`)
+- [x] `npm run build` with zero type errors (`astro check`)
 - [ ] Lighthouse: Performance / Accessibility / SEO ≥ 95
-- [ ] Push to GitHub and import into Vercel, then set `PUBLIC_WEB3FORMS_KEY` in Vercel env
+- [x] Push to GitHub (github.com/RichardDeanTan/Website-Portfolio)
+- [ ] Import into Vercel, then set `PUBLIC_WEB3FORMS_KEY` in Vercel env
+- [ ] Set `site` in astro.config.mjs to the real Vercel URL, commit and push
 - [ ] Test-submit the contact form on the Vercel preview
 - [ ] Update the CV header link and LinkedIn to the new URL
 - [ ] Delete `legacy/` after confirming content parity
