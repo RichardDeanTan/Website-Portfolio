@@ -46,18 +46,11 @@
 <script>
   type Theme = 'light' | 'dark';
   const root = document.documentElement;
-  const media = window.matchMedia('(prefers-color-scheme: dark)');
-
-  function hasSavedChoice(): boolean {
-    try {
-      return localStorage.getItem('theme') !== null;
-    } catch {
-      return false;
-    }
-  }
+  const themeColor = { light: '#ffffff', dark: '#0b0d10' } as const;
 
   function apply(theme: Theme, save: boolean) {
     root.dataset.theme = theme;
+    document.querySelector('meta[name="theme-color"]')?.setAttribute('content', themeColor[theme]);
     if (save) {
       try {
         localStorage.setItem('theme', theme);
@@ -77,10 +70,5 @@
     btn.addEventListener('click', () => {
       apply(root.dataset.theme === 'dark' ? 'light' : 'dark', true);
     });
-  });
-
-  // Follow the OS only until the visitor picks a theme themselves.
-  media.addEventListener('change', (e) => {
-    if (!hasSavedChoice()) apply(e.matches ? 'dark' : 'light', false);
   });
 </script>

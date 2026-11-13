@@ -18,8 +18,8 @@ const papers = (item.publicationIds ?? []).map(getPublication);
 const orgLine = [item.org, item.unit, item.location].filter(Boolean).join(' · ');
 ---
 
-<li class:list={['entry', { current: isCurrent }]}>
-  <span class="dot" aria-hidden="true"></span>
+<li class:list={['timeline-entry', { 'is-current': isCurrent }]}>
+  <span class="timeline-dot" aria-hidden="true"></span>
   <article class="card body">
     <header class="head">
       <div>
@@ -70,34 +70,9 @@ const orgLine = [item.org, item.unit, item.location].filter(Boolean).join(' · '
 </li>
 
 <style>
-  .entry {
-    position: relative;
-    padding-inline-start: var(--space-7);
-  }
-
-  /* Filled dot = current role, hollow dot = past role */
-  .dot {
-    position: absolute;
-    left: calc(var(--space-4) - 7px);
-    top: var(--space-6);
-    width: 16px;
-    height: 16px;
-    border: 2px solid var(--muted);
-    border-radius: 50%;
-    background: var(--bg);
-  }
-
-  .current .dot {
-    border-color: var(--accent);
-    background: var(--accent);
-  }
-
+  /* Timeline line, dots and the current-role accent border live in global.css */
   .body {
     padding: var(--space-5) var(--space-6);
-  }
-
-  .current .body {
-    border-color: var(--accent);
   }
 
   .head {
@@ -210,10 +185,6 @@ const orgLine = [item.org, item.unit, item.location].filter(Boolean).join(' · '
   }
 
   @media (max-width: 30rem) {
-    .entry {
-      padding-inline-start: var(--space-6);
-    }
-
     .body {
       padding: var(--space-4);
     }

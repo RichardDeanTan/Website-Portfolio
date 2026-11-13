@@ -2,6 +2,7 @@
 import ExperienceItem from './ExperienceItem.astro';
 import EducationCard from './EducationCard.astro';
 import { experiences } from '@/data/experience';
+import { education } from '@/data/education';
 ---
 
 <section id="experience">
@@ -13,9 +14,16 @@ import { experiences } from '@/data/experience';
     </ol>
 
     <h3 class="sub-heading edu-title reveal">My <span>Education</span></h3>
-    <div class="reveal">
-      <EducationCard />
-    </div>
+    <ol role="list" class="timeline reveal">
+      {
+        education.map((item) => (
+          <li class:list={['timeline-entry', { 'is-current': item.end === 'present' }]}>
+            <span class="timeline-dot" aria-hidden="true" />
+            <EducationCard item={item} />
+          </li>
+        ))
+      }
+    </ol>
   </div>
 </section>
 
@@ -24,22 +32,7 @@ import { experiences } from '@/data/experience';
     max-width: 56rem;
   }
 
-  .timeline {
-    position: relative;
-    display: grid;
-    gap: var(--space-5);
-  }
-
-  /* The muted 2px line the dots sit on */
-  .timeline::before {
-    content: '';
-    position: absolute;
-    left: calc(var(--space-4) - 1px);
-    top: var(--space-6);
-    bottom: var(--space-6);
-    width: 2px;
-    background: var(--border);
-  }
+  /* .timeline, .timeline-entry and .timeline-dot are shared styles in global.css */
 
   .edu-title {
     margin-top: var(--space-8);

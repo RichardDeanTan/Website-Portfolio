@@ -20,12 +20,12 @@ The goal was to rebuild the site in **Astro + TypeScript**, deploy it to **Verce
 | Stack | Astro 7 (7.4.x, Node ≥ 22.23.4) + TypeScript (strict), plain scoped CSS (no Tailwind), static output on Vercel |
 | Layout | Single page. Order: Home, About, **Publications, Projects**, Experience, Contact (Publications moved before Projects in Phase 3). Projects and Experience redesigned |
 | Colour | Keep dark + blue, no purple gradient. Soft accent glow on hover/focus only (restored in Phase 3 at the owner's request) |
-| Theme | Light and dark, follows the visitor's system setting by default, header toggle that remembers the choice |
+| Theme | Light and dark. Always starts in **light**, whatever the OS setting; dark only when the visitor picks it with the header toggle, which remembers the choice (changed after launch) |
 | Motion | Typewriter, scrolling logo strip, accordion slide, hover glow. Reduced motion is **softened, not removed** (Phase 3 decision; see section 2) |
 | Publications | Section of its own |
 | Contact form | Web3Forms (sends to the owner's inbox) |
 | Project images | Unsplash placeholders for now; real screenshots later |
-| Experience entries | Kalbe Farma, Researcher, DS Club R&D, Binus Mentor. High school removed. BINUS shown as a separate Education card |
+| Experience entries | Kalbe Farma, Researcher, DS Club R&D, Binus Mentor. Education shown as separate cards: BINUS and SMAK Penabur Kota Wisata (high school re-added after launch) |
 
 ---
 
@@ -67,7 +67,7 @@ Website-Portfolio/
 ## 2. Design system
 
 ### Colour tokens
-Every colour is a variable in `tokens.css`, with a dark set under `[data-theme="dark"]` (and a no-JS fallback that follows the OS). No gradients. There is **one accent colour**, used on the primary button, active nav link, text links, metric numbers, filter state and the "current role" marker.
+Every colour is a variable in `tokens.css`, with a dark set under `[data-theme="dark"]`. There is no OS-based fallback: without JavaScript the site is light. No gradients. There is **one accent colour**, used on the primary button, active nav link, text links, metric numbers, filter state and the "current role" marker.
 
 | Token | Light | Dark | Used for |
 |---|---|---|---|
@@ -92,7 +92,8 @@ All text and accent pairs pass WCAG AA (4.5:1) on both `--bg` and `--surface`; c
 - **Reduced motion** (Phase 3 decision: soften, don't remove): when the OS asks for reduced motion, the typewriter, carousel, accordion slide and glow still run; only the slide-up on scroll and the hover lifts are dropped. Reason: the owner's Windows has "Animation effects" off, and a full kill switch made the site completely static for them.
 
 ### Theme toggle
-- An inline script in `<head>` reads `localStorage`, falls back to `prefers-color-scheme`, and sets `data-theme` before paint, so the wrong theme never flashes.
+- An inline script in `<head>` sets `data-theme` before paint: `dark` only if `localStorage.theme` is `dark`, otherwise `light`. The OS `prefers-color-scheme` is ignored.
+- The `theme-color` meta (browser UI colour) follows the active theme.
 - The header toggle is a sun/moon button with an `aria-label`.
 
 ---
@@ -160,7 +161,9 @@ Sections alternate white / grey: Home (white), About (grey), Publications (white
   2. Undergraduate Researcher — BINUS AIRDC & BDSRC, Apr 2025 – Jul 2026 (CV bullets + CNN plant-disease work; links to the 3 papers)
   3. Research and Development Activist — Data Science Club, Feb 2025 – Jan 2026
   4. Binus Mentor — SASC, Feb – Jul 2025
-- **Education card** below the timeline: Bachelor of Data Science, BINUS, Sep 2023 – Present, GPA 3.96 / 4.00, relevant courses.
+- **Education** below the experience timeline, on its own timeline with the same line and dots (BINUS current: filled dot + accent border; high school: hollow dot), newest first:
+  1. Bachelor of Data Science, BINUS, Jakarta, Sep 2023 – Present, GPA 3.96 / 4.00, relevant courses.
+  2. High School, SMAK Penabur Kota Wisata, Cibubur, 2020 – 2023 (year-only dates), notes: focus on science and mathematics; graduated with a score above 90.
 
 ### Contact
 - **Left: "Get in touch"**: a short line, then email, WhatsApp, LinkedIn and GitHub as full-row links.
@@ -186,6 +189,7 @@ Sections alternate white / grey: Home (white), About (grey), Publications (white
 - **Metrics** shown where the old data had numbers: Credit Score (`Best ML model 76.98%`, `Best DL model 78.36%`), Disaster (`90%` F1-macro). Summarization has no metric until a ROUGE number is supplied.
 - **Images**: Unsplash URLs kept; the second Brain Tumor project got its own photo; alt text written from the actual images.
 - **Links**: duplicate "live" links that pointed to the repo were dropped.
+- **Education**: high school was dropped at first, then re-added after launch with the old site's details.
 
 ### Inputs from the owner
 - [x] 3 IEEE paper titles, venues, dates and DOIs
@@ -239,7 +243,12 @@ Sections alternate white / grey: Home (white), About (grey), Publications (white
 - [x] Brighter dark-mode border (`#252A33` → `#343B47`)
 - [x] Clip the About brush so it can't overflow the page
 - [x] Disable Astro's dev toolbar; drop deprecated `baseUrl` from tsconfig
-- [x] Add CLAUDE.md for future Claude Code sessions
+- [x] Add CLAUDE.md for future Claude Code sessions (git-ignored by the owner)
+
+### After launch
+- [x] Re-add high school as a second Education card (education dates may be year-only)
+- [x] Always start in light mode; dark only via the toggle
+- [x] Education on the same timeline line and dots as Experience (shared `.timeline` classes in global.css)
 
 ### Phase 4 — Ship
 - [x] `npm run build` with zero type errors (`astro check`)

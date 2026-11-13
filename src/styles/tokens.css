@@ -64,7 +64,10 @@
   color-scheme: light;
 }
 
-/* Dark theme: chosen by the toggle, or by the OS when the visitor never chose */
+/*
+  Dark theme: only when the visitor picks it with the toggle.
+  The site always starts in light mode, whatever the OS setting.
+*/
 :root[data-theme='dark'] {
   --bg: #0b0d10;
   --surface: #14171c;
@@ -78,22 +81,4 @@
   --overlay: rgb(0 0 0 / 0.7);
   --shadow-dialog: 0 24px 64px rgb(0 0 0 / 0.6);
   color-scheme: dark;
-}
-
-/* Fallback when JavaScript is off: follow the OS setting */
-@media (prefers-color-scheme: dark) {
-  :root:not([data-theme]) {
-    --bg: #0b0d10;
-    --surface: #14171c;
-    --border: #343b47;
-    --border-strong: #5f6775;
-    --text: #f2f4f7;
-    --muted: #a0a7b4;
-    --accent: #38a8e8;
-    --accent-hover: #5cbaf0;
-    --on-accent: #0b0d10;
-    --overlay: rgb(0 0 0 / 0.7);
-    --shadow-dialog: 0 24px 64px rgb(0 0 0 / 0.6);
-    color-scheme: dark;
-  }
 }

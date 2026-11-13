@@ -238,6 +238,57 @@ section.alt .card {
   color: var(--on-accent);
 }
 
+/* ---------- Timeline (Experience and Education) ---------- */
+/* <ol class="timeline"> of <li class="timeline-entry [is-current]"> with a .timeline-dot and a .card */
+.timeline {
+  position: relative;
+  display: grid;
+  gap: var(--space-5);
+}
+
+/* The muted 2px line the dots sit on */
+.timeline::before {
+  content: '';
+  position: absolute;
+  left: calc(var(--space-4) - 1px);
+  top: var(--space-6);
+  bottom: var(--space-6);
+  width: 2px;
+  background: var(--border);
+}
+
+.timeline-entry {
+  position: relative;
+  padding-inline-start: var(--space-7);
+}
+
+/* Filled dot = current (ongoing), hollow dot = finished */
+.timeline-dot {
+  position: absolute;
+  left: calc(var(--space-4) - 7px);
+  top: var(--space-6);
+  width: 16px;
+  height: 16px;
+  border: 2px solid var(--muted);
+  border-radius: 50%;
+  background: var(--bg);
+}
+
+.timeline-entry.is-current .timeline-dot {
+  border-color: var(--accent);
+  background: var(--accent);
+}
+
+.timeline-entry.is-current > .card {
+  border-color: var(--accent);
+}
+
+@media (max-width: 30rem) {
+  .timeline-entry {
+    padding-inline-start: var(--space-6);
+  }
+}
+
 /* ---------- Accordions: <details> slides open instead of snapping ---------- */
 /* Chromium/Safari with ::details-content support; other browsers open instantly. */
 details::details-content {

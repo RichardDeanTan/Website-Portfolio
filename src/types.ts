@@ -3,6 +3,9 @@ import type { ImageMetadata } from 'astro';
 /** Month in "YYYY-MM" form, e.g. "2026-02". */
 export type YearMonth = `${number}-${number}`;
 
+/** Year only, e.g. "2020", for older dates where the month isn't known. */
+export type Year = `${number}`;
+
 /**
  * Text fields marked `Rich` may wrap key numbers in **double asterisks**.
  * They render as <strong>, everything else is escaped.
@@ -84,10 +87,14 @@ export interface Education {
   school: string;
   degree: string;
   location: string;
-  start: YearMonth;
-  end: YearMonth | 'present';
-  gpa: string;
-  courses: string[];
+  /** "YYYY-MM", or "YYYY" when only the year is known */
+  start: YearMonth | Year;
+  end: YearMonth | Year | 'present';
+  /** Font Awesome icon shown on the card */
+  icon: FaIcon;
+  gpa?: string;
+  courses?: string[];
+  notes?: string[];
 }
 
 export interface Award {
