@@ -1,0 +1,91 @@
+---
+import type { Project } from '@/types';
+
+interface Props {
+  project: Project;
+  /** "icons" for compact cards, "buttons" for featured cards and the dialog */
+  variant: 'icons' | 'buttons';
+}
+
+const { project, variant } = Astro.props;
+// Several old entries used the repo URL as the "live" link too; only show a real demo.
+const live = project.liveLink && project.liveLink !== project.repoLink ? project.liveLink : undefined;
+const liveLabel = project.liveLabel ?? 'Live demo';
+---
+
+{
+  variant === 'icons' ? (
+    <div class="icon-links">
+      {project.repoLink && (
+        <a href={project.repoLink} target="_blank" rel="noopener noreferrer" aria-label={`${project.title}: source code on GitHub`} title="Source code">
+          <i class="fa-brands fa-github" aria-hidden="true" />
+        </a>
+      )}
+      {live && (
+        <a href={live} target="_blank" rel="noopener noreferrer" aria-label={`${project.title}: ${liveLabel.toLowerCase()}`} title={liveLabel}>
+          <i class="fa-solid fa-arrow-up-right-from-square" aria-hidden="true" />
+        </a>
+      )}
+    </div>
+  ) : (
+    <div class="btn-links">
+      {project.repoLink && (
+        <a class="btn" href={project.repoLink} target="_blank" rel="noopener noreferrer">
+          <i class="fa-brands fa-github" aria-hidden="true" /> Source code
+          <span class="sr-only"> (opens in a new tab)</span>
+        </a>
+      )}
+      {live && (
+        <a class="btn" href={live} target="_blank" rel="noopener noreferrer">
+          <i class="fa-solid fa-arrow-up-right-from-square" aria-hidden="true" /> {liveLabel}
+          <span class="sr-only"> (opens in a new tab)</span>
+        </a>
+      )}
+    </div>
+  )
+}
+
+<style>
+  .icon-links {
+    position: relative;
+    z-index: 1; /* sits above the card's stretched click area */
+    display: flex;
+    gap: var(--space-2);
+  }
+
+  .icon-links a {
+    display: grid;
+    place-items: center;
+    width: 2.25rem;
+    height: 2.25rem;
+    border: 1px solid var(--border);
+    border-radius: var(--radius-card);
+    color: var(--muted);
+    text-decoration: none;
+    transition:
+      color var(--dur) var(--ease),
+      border-color var(--dur) var(--ease),
+      box-shadow var(--dur) var(--ease);
+  }
+
+  .icon-links a:hover,
+  .icon-links a:focus-visible {
+    color: var(--accent);
+    border-color: var(--accent);
+    box-shadow: var(--glow);
+  }
+
+  .btn-links {
+    position: relative;
+    z-index: 1;
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-3);
+  }
+
+  .btn-links .btn {
+    min-height: 2.5rem;
+    padding-inline: var(--space-4);
+    font-size: var(--fs-sm);
+  }
+</style>

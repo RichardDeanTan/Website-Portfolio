@@ -1,0 +1,92 @@
+---
+import { publications } from '@/data/publications';
+import { doiUrl, formatMonth } from '@/lib/format';
+---
+
+<section id="publications">
+  <div class="container narrow">
+    <h2 class="heading reveal">My <span>Publications</span></h2>
+    <p class="intro reveal">
+      Peer-reviewed papers from my undergraduate research, indexed in IEEE Xplore.
+    </p>
+
+    <ol class="pubs reveal">
+      {
+        publications.map((p) => (
+          <li class="pub">
+            <a class="pub-title" href={doiUrl(p.doi)} target="_blank" rel="noopener noreferrer">
+              {p.title}
+              <span class="sr-only"> (opens in a new tab)</span>
+            </a>
+            <p class="meta">
+              {p.venue} · {p.location} · {formatMonth(p.date)}
+            </p>
+            <p class="meta">
+              {p.authorRole} · DOI {p.doi}
+            </p>
+            {p.award && (
+              <p class="award">
+                <i class="fa-solid fa-trophy" aria-hidden="true" /> {p.award}
+              </p>
+            )}
+          </li>
+        ))
+      }
+    </ol>
+  </div>
+</section>
+
+<style>
+  .narrow {
+    max-width: 52rem;
+  }
+
+  .intro {
+    margin-top: calc(-1 * var(--space-5));
+    margin-bottom: var(--space-7);
+    color: var(--muted);
+    text-align: center;
+  }
+
+  .pubs {
+    display: grid;
+    gap: var(--space-6);
+    padding-inline-start: 1.75rem;
+  }
+
+  .pub::marker {
+    color: var(--muted);
+    font-weight: 600;
+  }
+
+  .pub-title {
+    color: var(--text);
+    font-size: var(--fs-md);
+    font-weight: 600;
+    line-height: 1.4;
+    text-decoration-color: var(--border);
+    text-decoration-thickness: 2px;
+  }
+
+  .pub-title:hover {
+    color: var(--accent);
+    text-decoration-color: var(--accent);
+  }
+
+  .meta {
+    margin-top: var(--space-1);
+    color: var(--muted);
+    font-size: var(--fs-sm);
+    overflow-wrap: anywhere;
+  }
+
+  .award {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--space-2);
+    margin-top: var(--space-2);
+    color: var(--accent);
+    font-size: var(--fs-sm);
+    font-weight: 600;
+  }
+</style>

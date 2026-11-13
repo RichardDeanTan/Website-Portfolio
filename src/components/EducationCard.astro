@@ -1,0 +1,94 @@
+---
+import { education } from '@/data/education';
+import { formatRange } from '@/lib/format';
+---
+
+<article class="card education">
+  <div class="icon" aria-hidden="true"><i class="fa-solid fa-graduation-cap"></i></div>
+  <div class="content">
+    <header class="head">
+      <div>
+        <h3>{education.degree}</h3>
+        <p class="muted">{education.school} · {education.location}</p>
+      </div>
+      <p class="dates">{formatRange(education.start, education.end)}</p>
+    </header>
+    <p class="gpa">GPA <strong>{education.gpa}</strong></p>
+    <p class="courses-title">Relevant courses</p>
+    <ul role="list" class="chips">
+      {education.courses.map((c) => <li class="chip">{c}</li>)}
+    </ul>
+  </div>
+</article>
+
+<style>
+  .education {
+    display: flex;
+    gap: var(--space-5);
+    padding: var(--space-5) var(--space-6);
+  }
+
+  .icon {
+    display: grid;
+    flex-shrink: 0;
+    place-items: center;
+    width: 2.75rem;
+    height: 2.75rem;
+    border: 1px solid var(--border);
+    border-radius: var(--radius-card);
+    color: var(--accent);
+    font-size: 1.1rem;
+  }
+
+  .content {
+    flex: 1;
+    min-width: 0;
+  }
+
+  .head {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    gap: var(--space-2) var(--space-5);
+  }
+
+  h3 {
+    font-size: var(--fs-lg);
+  }
+
+  .dates {
+    color: var(--muted);
+    font-size: var(--fs-sm);
+    font-weight: 500;
+  }
+
+  .gpa {
+    margin-top: var(--space-3);
+  }
+
+  .gpa strong {
+    color: var(--accent);
+  }
+
+  .courses-title {
+    margin-top: var(--space-3);
+    margin-bottom: var(--space-2);
+    color: var(--muted);
+    font-size: var(--fs-sm);
+    font-weight: 500;
+  }
+
+  .chips {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-1);
+  }
+
+  @media (max-width: 30rem) {
+    .education {
+      flex-direction: column;
+      gap: var(--space-3);
+      padding: var(--space-4);
+    }
+  }
+</style>

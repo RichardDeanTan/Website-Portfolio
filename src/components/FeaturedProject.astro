@@ -1,0 +1,124 @@
+---
+import { Image } from 'astro:assets';
+import ProjectLinks from './ProjectLinks.astro';
+import { categoryLabels } from '@/data/projects';
+import type { Project } from '@/types';
+
+interface Props {
+  project: Project;
+}
+
+const { project } = Astro.props;
+---
+
+<article class="card featured" data-project data-categories={project.categories.join(' ')}>
+  <Image
+    src={project.image}
+    alt={project.imageAlt}
+    width={900}
+    height={600}
+    class="thumb"
+    loading="lazy"
+  />
+  <div class="content">
+    <p class="category">
+      Featured · {project.categories.map((c) => categoryLabels[c]).join(' · ')}
+    </p>
+    <h3 class="title">{project.title}</h3>
+    <p class="summary">{project.summary}</p>
+    {project.highlight && <p class="highlight">{project.highlight}</p>}
+    <ul role="list" class="chips" aria-label="Tech stack">
+      {project.tech.map((t) => <li class="chip">{t}</li>)}
+    </ul>
+    <div class="actions">
+      <button type="button" class="btn btn-primary details-btn" data-open-dialog={project.slug} aria-haspopup="dialog">
+        Details<span class="sr-only">: {project.title}</span>
+      </button>
+      <ProjectLinks project={project} variant="buttons" />
+    </div>
+  </div>
+</article>
+
+<style>
+  .featured {
+    display: grid;
+    grid-template-columns: minmax(0, 0.9fr) minmax(0, 1.1fr);
+    overflow: hidden;
+    transition:
+      border-color var(--dur) var(--ease),
+      box-shadow var(--dur) var(--ease);
+  }
+
+  .featured:hover {
+    border-color: var(--accent);
+    box-shadow: var(--glow);
+  }
+
+  .thumb {
+    width: 100%;
+    height: 100%;
+    min-height: 16rem;
+    object-fit: cover;
+    background: var(--surface);
+  }
+
+  .content {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-3);
+    padding: var(--space-6);
+  }
+
+  .category {
+    color: var(--muted);
+    font-size: var(--fs-sm);
+    font-weight: 500;
+  }
+
+  .title {
+    font-size: var(--fs-lg);
+  }
+
+  .summary {
+    color: var(--muted);
+  }
+
+  .highlight {
+    color: var(--accent);
+    font-weight: 600;
+  }
+
+  .chips {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-1);
+  }
+
+  .actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-3);
+    margin-top: var(--space-2);
+  }
+
+  .details-btn {
+    min-height: 2.5rem;
+    padding-inline: var(--space-5);
+    font-size: var(--fs-sm);
+  }
+
+  @media (max-width: 48rem) {
+    .featured {
+      grid-template-columns: 1fr;
+    }
+
+    .thumb {
+      min-height: 0;
+      aspect-ratio: 16 / 9;
+    }
+
+    .content {
+      padding: var(--space-5);
+    }
+  }
+</style>

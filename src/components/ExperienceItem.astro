@@ -1,0 +1,221 @@
+---
+import { getPublication } from '@/data/publications';
+import { doiUrl, formatRange, rich } from '@/lib/format';
+import type { Experience, ExperienceType } from '@/types';
+
+interface Props {
+  item: Experience;
+}
+
+const { item } = Astro.props;
+const isCurrent = item.end === 'present';
+const typeLabels: Record<ExperienceType, string> = {
+  work: 'Work',
+  research: 'Research',
+  organisation: 'Organisation',
+};
+const papers = (item.publicationIds ?? []).map(getPublication);
+const orgLine = [item.org, item.unit, item.location].filter(Boolean).join(' · ');
+---
+
+<li class:list={['entry', { current: isCurrent }]}>
+  <span class="dot" aria-hidden="true"></span>
+  <article class="card body">
+    <header class="head">
+      <div>
+        <p class="type">
+          {typeLabels[item.type]}
+          {isCurrent && <span class="current-label"> · Current</span>}
+        </p>
+        <h3 class="role">{item.role}</h3>
+        <p class="org">{orgLine}</p>
+      </div>
+      <p class="dates">{formatRange(item.start, item.end)}</p>
+    </header>
+
+    <p class="summary">{item.summary}</p>
+
+    <details open={item.defaultOpen}>
+      <summary>
+        <span class="when-closed">Show details</span>
+        <span class="when-open">Hide details</span>
+        <i class="fa-solid fa-chevron-down" aria-hidden="true"></i>
+      </summary>
+      <ul class="highlights">
+        {item.highlights.map((h) => <li set:html={rich(h)} />)}
+      </ul>
+      {
+        papers.length > 0 && (
+          <div class="papers">
+            <p class="papers-title">Publications from this role</p>
+            <ul>
+              {papers.map((p) => (
+                <li>
+                  <a href={doiUrl(p.doi)} target="_blank" rel="noopener noreferrer">
+                    {p.title}
+                  </a>{' '}
+                  <span class="muted">({p.venueShort})</span>
+                </li>
+              ))}
+            </ul>
+          </div>
+        )
+      }
+    </details>
+
+    <ul role="list" class="chips" aria-label="Tools and skills">
+      {item.tech.map((t) => <li class="chip">{t}</li>)}
+    </ul>
+  </article>
+</li>
+
+<style>
+  .entry {
+    position: relative;
+    padding-inline-start: var(--space-7);
+  }
+
+  /* Filled dot = current role, hollow dot = past role */
+  .dot {
+    position: absolute;
+    left: calc(var(--space-4) - 7px);
+    top: var(--space-6);
+    width: 16px;
+    height: 16px;
+    border: 2px solid var(--muted);
+    border-radius: 50%;
+    background: var(--bg);
+  }
+
+  .current .dot {
+    border-color: var(--accent);
+    background: var(--accent);
+  }
+
+  .body {
+    padding: var(--space-5) var(--space-6);
+  }
+
+  .current .body {
+    border-color: var(--accent);
+  }
+
+  .head {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    gap: var(--space-2) var(--space-5);
+  }
+
+  .type {
+    color: var(--muted);
+    font-size: var(--fs-sm);
+    font-weight: 500;
+  }
+
+  .current-label {
+    color: var(--accent);
+  }
+
+  .role {
+    font-size: var(--fs-lg);
+  }
+
+  .org {
+    color: var(--muted);
+    font-weight: 500;
+  }
+
+  .dates {
+    color: var(--muted);
+    font-size: var(--fs-sm);
+    font-weight: 500;
+    white-space: nowrap;
+  }
+
+  .summary {
+    margin-top: var(--space-3);
+  }
+
+  details {
+    margin-top: var(--space-3);
+  }
+
+  summary {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--space-2);
+    padding-block: var(--space-1);
+    color: var(--accent);
+    font-size: var(--fs-sm);
+    font-weight: 600;
+    cursor: pointer;
+    list-style: none;
+  }
+
+  summary::-webkit-details-marker {
+    display: none;
+  }
+
+  summary i {
+    font-size: 0.75em;
+    transition: transform var(--dur) var(--ease);
+  }
+
+  details[open] summary i {
+    transform: rotate(180deg);
+  }
+
+  .when-open,
+  details[open] .when-closed {
+    display: none;
+  }
+
+  details[open] .when-open {
+    display: inline;
+  }
+
+  .highlights {
+    margin-top: var(--space-2);
+    padding-inline-start: 1.25rem;
+    color: var(--muted);
+  }
+
+  .highlights li + li {
+    margin-top: var(--space-2);
+  }
+
+  .highlights :global(strong) {
+    color: var(--text);
+  }
+
+  .papers {
+    margin-top: var(--space-4);
+    font-size: var(--fs-sm);
+  }
+
+  .papers-title {
+    font-weight: 600;
+  }
+
+  .papers ul {
+    padding-inline-start: 1.25rem;
+  }
+
+  .chips {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-1);
+    margin-top: var(--space-4);
+  }
+
+  @media (max-width: 30rem) {
+    .entry {
+      padding-inline-start: var(--space-6);
+    }
+
+    .body {
+      padding: var(--space-4);
+    }
+  }
+</style>

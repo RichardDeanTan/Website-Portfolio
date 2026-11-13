@@ -1,0 +1,222 @@
+---
+import FeaturedProject from './FeaturedProject.astro';
+import ProjectCard from './ProjectCard.astro';
+import ProjectDialog from './ProjectDialog.astro';
+import {
+  projects,
+  featuredProjects,
+  otherProjects,
+  categoryLabels,
+  categoryOrder,
+  countByCategory,
+} from '@/data/projects';
+
+const filters = [
+  { id: 'all', label: 'All', count: projects.length },
+  ...categoryOrder.map((id) => ({ id, label: categoryLabels[id], count: countByCategory(id) })),
+];
+---
+
+<section id="projects" class="alt">
+  <div class="container">
+    <h2 class="heading reveal">My <span>Projects</span></h2>
+
+    <div class="filters reveal" role="group" aria-label="Filter projects by category">
+      {
+        filters.map((f) => (
+          <button type="button" class="filter" data-filter={f.id} aria-pressed={f.id === 'all' ? 'true' : 'false'}>
+            {f.label} <span class="count">({f.count})</span>
+          </button>
+        ))
+      }
+    </div>
+    <p class="status sr-only" aria-live="polite" data-filter-status></p>
+
+    <div class="featured-list reveal" data-featured-group>
+      {featuredProjects.map((p) => <FeaturedProject project={p} />)}
+    </div>
+
+    <ul role="list" class="grid reveal">
+      {
+        otherProjects.map((p) => (
+          <li data-project-item>
+            <ProjectCard project={p} />
+          </li>
+        ))
+      }
+    </ul>
+
+    <p class="empty" data-empty hidden>
+      No projects in this category yet. <button type="button" class="link-btn" data-filter="all">Show all projects</button>
+    </p>
+  </div>
+
+  {projects.map((p) => <ProjectDialog project={p} />)}
+</section>
+
+<style>
+  .filters {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: var(--space-2);
+    margin-bottom: var(--space-7);
+  }
+
+  .filter {
+    min-height: 2.5rem;
+    padding: var(--space-2) var(--space-4);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-card);
+    background: transparent;
+    color: var(--muted);
+    font-size: var(--fs-sm);
+    font-weight: 500;
+    transition:
+      color var(--dur) var(--ease),
+      border-color var(--dur) var(--ease),
+      background-color var(--dur) var(--ease),
+      box-shadow var(--dur) var(--ease);
+  }
+
+  .filter:hover,
+  .filter:focus-visible {
+    border-color: var(--accent);
+    color: var(--text);
+    box-shadow: var(--glow);
+  }
+
+  .filter[aria-pressed='true'] {
+    border-color: var(--accent);
+    background: var(--accent);
+    color: var(--on-accent);
+    box-shadow: var(--glow);
+  }
+
+  .count {
+    opacity: 0.8;
+  }
+
+  .featured-list {
+    display: grid;
+    gap: var(--space-5);
+    margin-bottom: var(--space-5);
+  }
+
+  .grid {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: var(--space-5);
+  }
+
+  .grid > li {
+    display: flex;
+    min-width: 0;
+  }
+
+  /* min-width: 0 lets cards shrink below their content's natural width on phones */
+  .grid > li > :global(*) {
+    flex: 1;
+    min-width: 0;
+  }
+
+  .empty {
+    text-align: center;
+    color: var(--muted);
+  }
+
+  .link-btn {
+    padding: 0;
+    border: 0;
+    background: none;
+    color: var(--accent);
+    text-decoration: underline;
+  }
+
+  @media (max-width: 60rem) {
+    .grid {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+  }
+
+  @media (max-width: 38rem) {
+    .grid {
+      grid-template-columns: 1fr;
+    }
+  }
+
+  /* While a project dialog is open, the page behind it doesn't scroll */
+  :global(html:has(dialog[open])) {
+    overflow: hidden;
+  }
+</style>
+
+<script>
+  const PARAM = 'filter';
+  const buttons = [...document.querySelectorAll<HTMLButtonElement>('.filters [data-filter]')];
+  const validFilters = new Set(buttons.map((b) => b.dataset.filter));
+  const featured = [...document.querySelectorAll<HTMLElement>('[data-featured-group] [data-project]')];
+  const featuredGroup = document.querySelector<HTMLElement>('[data-featured-group]');
+  const gridItems = [...document.querySelectorAll<HTMLElement>('[data-project-item]')];
+  const status = document.querySelector<HTMLElement>('[data-filter-status]');
+  const empty = document.querySelector<HTMLElement>('[data-empty]');
+
+  function matches(el: HTMLElement, filter: string) {
+    const card = el.matches('[data-project]') ? el : el.querySelector<HTMLElement>('[data-project]');
+    return filter === 'all' || (card?.dataset.categories ?? '').split(' ').includes(filter);
+  }
+
+  function applyFilter(filter: string, updateUrl: boolean) {
+    if (!validFilters.has(filter)) filter = 'all';
+
+    buttons.forEach((b) => b.setAttribute('aria-pressed', String(b.dataset.filter === filter)));
+
+    let visible = 0;
+    featured.forEach((el) => {
+      const show = matches(el, filter);
+      el.hidden = !show;
+      if (show) visible++;
+    });
+    if (featuredGroup) featuredGroup.hidden = featured.every((el) => el.hidden);
+    gridItems.forEach((el) => {
+      const show = matches(el, filter);
+      el.hidden = !show;
+      if (show) visible++;
+    });
+
+    if (empty) empty.hidden = visible > 0;
+    const label = buttons.find((b) => b.dataset.filter === filter)?.firstChild?.textContent?.trim() ?? '';
+    if (status) status.textContent = `Showing ${visible} ${filter === 'all' ? '' : label + ' '}${visible === 1 ? 'project' : 'projects'}`;
+
+    if (updateUrl) {
+      const url = new URL(window.location.href);
+      if (filter === 'all') url.searchParams.delete(PARAM);
+      else url.searchParams.set(PARAM, filter);
+      history.replaceState(null, '', url);
+    }
+  }
+
+  document.querySelectorAll<HTMLButtonElement>('#projects [data-filter]').forEach((btn) => {
+    btn.addEventListener('click', () => applyFilter(btn.dataset.filter ?? 'all', true));
+  });
+
+  // Shared links like /?filter=de#projects open with that filter applied
+  const initial = new URLSearchParams(window.location.search).get(PARAM);
+  if (initial) applyFilter(initial, false);
+
+  // Project dialogs
+  document.querySelectorAll<HTMLButtonElement>('[data-open-dialog]').forEach((btn) => {
+    btn.addEventListener('click', () => {
+      const dialog = document.getElementById(`dialog-${btn.dataset.openDialog}`);
+      if (dialog instanceof HTMLDialogElement) dialog.showModal();
+    });
+  });
+
+  document.querySelectorAll<HTMLDialogElement>('dialog.project-dialog').forEach((dialog) => {
+    dialog.querySelector('[data-close-dialog]')?.addEventListener('click', () => dialog.close());
+    // Clicking the dimmed backdrop (the dialog element itself, outside its content) closes it
+    dialog.addEventListener('click', (e) => {
+      if (e.target === dialog) dialog.close();
+    });
+  });
+</script>

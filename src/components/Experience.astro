@@ -1,0 +1,48 @@
+---
+import ExperienceItem from './ExperienceItem.astro';
+import EducationCard from './EducationCard.astro';
+import { experiences } from '@/data/experience';
+---
+
+<section id="experience">
+  <div class="container narrow">
+    <h2 class="heading reveal">My <span>Experience</span></h2>
+
+    <ol role="list" class="timeline reveal">
+      {experiences.map((item) => <ExperienceItem item={item} />)}
+    </ol>
+
+    <h3 class="sub-heading edu-title reveal">My <span>Education</span></h3>
+    <div class="reveal">
+      <EducationCard />
+    </div>
+  </div>
+</section>
+
+<style>
+  .narrow {
+    max-width: 56rem;
+  }
+
+  .timeline {
+    position: relative;
+    display: grid;
+    gap: var(--space-5);
+  }
+
+  /* The muted 2px line the dots sit on */
+  .timeline::before {
+    content: '';
+    position: absolute;
+    left: calc(var(--space-4) - 1px);
+    top: var(--space-6);
+    bottom: var(--space-6);
+    width: 2px;
+    background: var(--border);
+  }
+
+  .edu-title {
+    margin-top: var(--space-8);
+    text-align: center;
+  }
+</style>

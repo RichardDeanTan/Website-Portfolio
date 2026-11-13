@@ -1,0 +1,86 @@
+---
+import { Image } from 'astro:assets';
+import { skillGroups } from '@/data/skills';
+---
+
+<div class="skill-groups">
+  {
+    skillGroups.map((group) => (
+      <div class="card group">
+        <h4>{group.title}</h4>
+        <ul role="list">
+          {group.skills.map((skill) => (
+            <li class="skill">
+              {skill.icon ? (
+                <Image
+                  src={skill.icon}
+                  alt=""
+                  width={20}
+                  height={20}
+                  class:list={['skill-icon', { 'invert-dark': skill.invertOnDark }]}
+                />
+              ) : (
+                <span class="skill-icon placeholder" aria-hidden="true" />
+              )}
+              {skill.name}
+            </li>
+          ))}
+        </ul>
+      </div>
+    ))
+  }
+</div>
+
+<style>
+  .skill-groups {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(min(100%, 19rem), 1fr));
+    gap: var(--space-4);
+  }
+
+  .group {
+    padding: var(--space-5);
+  }
+
+  .group h4 {
+    margin-bottom: var(--space-3);
+    font-size: var(--fs-base);
+  }
+
+  .group ul {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-2);
+  }
+
+  .skill {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--space-2);
+    padding: var(--space-1) var(--space-3) var(--space-1) var(--space-2);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-chip);
+    background: var(--bg);
+    font-size: var(--fs-sm);
+  }
+
+  .skill-icon {
+    width: 1.25rem;
+    height: 1.25rem;
+    object-fit: contain;
+  }
+
+  /* Keeps labels aligned when Devicon has no logo for a skill */
+  .skill-icon.placeholder {
+    display: inline-block;
+    width: 0.375rem;
+    height: 0.375rem;
+    margin-inline: 0.4375rem;
+    border-radius: 50%;
+    background: var(--border);
+  }
+
+  :global([data-theme='dark']) .invert-dark {
+    filter: invert(1);
+  }
+</style>

@@ -1,0 +1,9 @@
+# Store text files with LF line endings in the repo (Vercel builds on Linux);
+# Git converts them for your editor on checkout.
+* text=auto eol=lf
+
+*.png binary
+*.jpg binary
+*.jpeg binary
+*.pdf binary
+*.woff2 binary

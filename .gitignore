@@ -1,0 +1,32 @@
+# build output
+dist/
+.astro/
+.vercel/
+
+# dependencies
+node_modules/
+
+# environment (keep .env.example committed)
+.env
+.env.*
+!.env.example
+
+# logs
+npm-debug.log*
+
+# editor / OS
+.vscode/*
+!.vscode/extensions.json
+.idea/
+.DS_Store
+Thumbs.db
+
+# local scratch folder (carried over from the old repo)
+Test/
+
+# Claude Code local settings (dev-server launcher; not part of the site)
+.claude/
+
+# old GitHub Pages site, kept locally for reference only
+# (it already lives in the Personal-Portfolio repo)
+legacy/

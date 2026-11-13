@@ -1,0 +1,149 @@
+---
+import SocialLinks from './SocialLinks.astro';
+import TechCarousel from './TechCarousel.astro';
+import { profile } from '@/data/profile';
+
+const [firstRole] = profile.roles;
+const rolesSentence = profile.roles.join(', ').replace(/, ([^,]*)$/, ' and $1');
+---
+
+<section id="home" class="hero">
+  <div class="container hero-inner">
+    <h1 class="hero-title">Hi, I'm <span>{profile.name}</span></h1>
+
+    <p class="hero-roles">
+      <span class="sr-only">{rolesSentence}</span>
+      <span aria-hidden="true">
+        I'm a <span class="typed" data-typewriter data-roles={JSON.stringify(profile.roles)}>{firstRole}</span><span
+          class="caret"></span>
+      </span>
+    </p>
+
+    <p class="hero-headline">{profile.headline}</p>
+    <p class="hero-bio">{profile.bio}</p>
+
+    <div class="hero-ctas">
+      <a href="#projects" class="btn btn-primary">View Projects</a>
+      <a href={profile.cvPath} class="btn" download>
+        <i class="fa-solid fa-download" aria-hidden="true"></i> Download CV
+      </a>
+    </div>
+
+    <SocialLinks class="hero-socials" />
+  </div>
+
+  <div class="container">
+    <TechCarousel />
+  </div>
+</section>
+
+<style>
+  .hero {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    gap: var(--space-8);
+    min-height: calc(100svh - var(--header-h));
+    padding-block: var(--space-8) var(--space-7);
+  }
+
+  .hero-inner {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+  }
+
+  .hero-title {
+    font-size: var(--fs-2xl);
+    font-weight: 700;
+    letter-spacing: -0.01em;
+  }
+
+  .hero-title span {
+    color: var(--accent);
+  }
+
+  .hero-roles {
+    margin-top: var(--space-3);
+    min-height: 1.4em;
+    font-size: var(--fs-lg);
+    font-weight: 600;
+  }
+
+  .caret {
+    display: inline-block;
+    width: 2px;
+    height: 1.1em;
+    margin-inline-start: 2px;
+    vertical-align: -0.15em;
+    background: var(--accent);
+    animation: blink 1s steps(1) infinite;
+  }
+
+  .hero-headline {
+    margin-top: var(--space-4);
+    color: var(--muted);
+    font-weight: 500;
+  }
+
+  .hero-bio {
+    max-width: 62ch;
+    margin-top: var(--space-4);
+    color: var(--muted);
+  }
+
+  .hero-ctas {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: var(--space-3);
+    margin-top: var(--space-6);
+  }
+
+  .hero :global(.hero-socials) {
+    margin-top: var(--space-6);
+  }
+
+  @keyframes blink {
+    50% {
+      opacity: 0;
+    }
+  }
+
+</style>
+
+<script>
+  const el = document.querySelector<HTMLElement>('[data-typewriter]');
+  if (el) {
+    const roles: string[] = JSON.parse(el.dataset.roles ?? '[]');
+    let roleIndex = 0;
+    let charIndex = roles[0]?.length ?? 0;
+    let deleting = true;
+
+    // Starts by holding the server-rendered first role, then deletes and types the next.
+    const tick = () => {
+      const role = roles[roleIndex];
+      if (deleting) {
+        charIndex--;
+        el.textContent = role.slice(0, charIndex);
+        if (charIndex === 0) {
+          deleting = false;
+          roleIndex = (roleIndex + 1) % roles.length;
+          return setTimeout(tick, 400);
+        }
+        return setTimeout(tick, 60);
+      }
+      const next = roles[roleIndex];
+      charIndex++;
+      el.textContent = next.slice(0, charIndex);
+      if (charIndex === next.length) {
+        deleting = true;
+        return setTimeout(tick, 1800);
+      }
+      return setTimeout(tick, 110);
+    };
+
+    if (roles.length > 1) setTimeout(tick, 1800);
+  }
+</script>

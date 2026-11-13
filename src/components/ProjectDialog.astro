@@ -1,0 +1,213 @@
+---
+import { Image } from 'astro:assets';
+import ProjectLinks from './ProjectLinks.astro';
+import { getPublication } from '@/data/publications';
+import { doiUrl } from '@/lib/format';
+import type { Project } from '@/types';
+
+interface Props {
+  project: Project;
+}
+
+const { project } = Astro.props;
+const publication = project.publicationId ? getPublication(project.publicationId) : undefined;
+const titleId = `dialog-title-${project.slug}`;
+---
+
+<!-- Native modal <dialog>: Esc closes it, focus stays inside, and focus returns to the opener -->
+<dialog class="project-dialog" id={`dialog-${project.slug}`} aria-labelledby={titleId}>
+  <div class="inner">
+    <button type="button" class="close" data-close-dialog aria-label="Close project details">
+      <i class="fa-solid fa-xmark" aria-hidden="true"></i>
+    </button>
+
+    <Image
+      src={project.image}
+      alt={project.imageAlt}
+      width={900}
+      height={420}
+      class="hero-img"
+      loading="lazy"
+    />
+
+    <div class="body">
+      <h3 id={titleId}>{project.title}</h3>
+      <ul role="list" class="chips" aria-label="Tech stack">
+        {project.tech.map((t) => <li class="chip">{t}</li>)}
+      </ul>
+
+      <h4>Overview</h4>
+      <p>{project.summary}</p>
+
+      <h4>What I did</h4>
+      <ul class="details">
+        {project.details.map((d) => <li>{d}</li>)}
+      </ul>
+
+      {
+        project.metrics && (
+          <>
+            <h4>Results</h4>
+            <dl class="metrics">
+              {project.metrics.map((m) => (
+                <div>
+                  <dt>{m.label}</dt>
+                  <dd>{m.value}</dd>
+                </div>
+              ))}
+            </dl>
+          </>
+        )
+      }
+
+      {
+        publication && (
+          <p class="paper">
+            <i class="fa-solid fa-file-lines" aria-hidden="true" /> Published as{' '}
+            <a href={doiUrl(publication.doi)} target="_blank" rel="noopener noreferrer">
+              {publication.title}
+            </a>{' '}
+            ({publication.venueShort}
+            {publication.award && `, ${publication.award}`})
+          </p>
+        )
+      }
+
+      <div class="links">
+        <ProjectLinks project={project} variant="buttons" />
+      </div>
+    </div>
+  </div>
+</dialog>
+
+<style>
+  .project-dialog {
+    width: min(100% - 2rem, 46rem);
+    max-height: min(100% - 2rem, 52rem);
+    margin: auto;
+    padding: 0;
+    border: 1px solid var(--border);
+    border-radius: var(--radius-card);
+    background: var(--bg);
+    color: var(--text);
+    box-shadow: var(--shadow-dialog);
+    overscroll-behavior: contain;
+  }
+
+  .project-dialog::backdrop {
+    background: var(--overlay);
+  }
+
+  .project-dialog[open] {
+    animation: pop 200ms var(--ease);
+  }
+
+  .inner {
+    position: relative;
+  }
+
+  .close {
+    position: absolute;
+    top: var(--space-3);
+    right: var(--space-3);
+    z-index: 1;
+    display: grid;
+    place-items: center;
+    width: 2.5rem;
+    height: 2.5rem;
+    border: 1px solid var(--border);
+    border-radius: 50%;
+    background: var(--bg);
+    color: var(--text);
+    font-size: 1.1rem;
+  }
+
+  .close:hover {
+    border-color: var(--accent);
+  }
+
+  .hero-img {
+    width: 100%;
+    aspect-ratio: 15 / 7;
+    object-fit: cover;
+    background: var(--surface);
+  }
+
+  .body {
+    padding: var(--space-5) var(--space-6) var(--space-6);
+  }
+
+  h3 {
+    font-size: var(--fs-lg);
+    margin-bottom: var(--space-3);
+  }
+
+  h4 {
+    margin-top: var(--space-5);
+    margin-bottom: var(--space-2);
+    font-size: var(--fs-base);
+  }
+
+  .body p,
+  .details {
+    color: var(--muted);
+  }
+
+  .details {
+    padding-inline-start: 1.25rem;
+  }
+
+  .details li + li {
+    margin-top: var(--space-1);
+  }
+
+  .chips {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-1);
+  }
+
+  .metrics {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-6);
+  }
+
+  .metrics dt {
+    color: var(--muted);
+    font-size: var(--fs-sm);
+  }
+
+  .metrics dd {
+    margin: 0;
+    color: var(--accent);
+    font-size: var(--fs-lg);
+    font-weight: 700;
+  }
+
+  .paper {
+    margin-top: var(--space-5);
+    font-size: var(--fs-sm);
+  }
+
+  .paper i {
+    color: var(--accent);
+  }
+
+  .links {
+    margin-top: var(--space-6);
+  }
+
+  @keyframes pop {
+    from {
+      opacity: 0;
+      transform: translateY(8px) scale(0.98);
+    }
+  }
+
+  @media (max-width: 30rem) {
+    .body {
+      padding: var(--space-4) var(--space-4) var(--space-5);
+    }
+  }
+</style>

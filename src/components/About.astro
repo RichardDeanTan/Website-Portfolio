@@ -1,0 +1,225 @@
+---
+import { Image, getImage } from 'astro:assets';
+import SkillGroups from './SkillGroups.astro';
+import Achievements from './Achievements.astro';
+import { profile } from '@/data/profile';
+import { rich } from '@/lib/format';
+import brush from '@/assets/aboutme-bg.png';
+import person from '@/assets/aboutme-person.png';
+
+const brushMask = await getImage({ src: brush, width: 720, format: 'webp' });
+---
+
+<section id="about" class="alt">
+  <div class="container">
+    <h2 class="heading reveal">About <span>Me</span></h2>
+
+    <div class="about-grid reveal">
+      <div class="about-text">
+        {profile.about.map((paragraph) => <p set:html={rich(paragraph)} />)}
+
+        <dl class="facts">
+          {
+            profile.quickFacts.map((fact) => (
+              <div class="fact">
+                <dt class="sr-only">{fact.label}</dt>
+                <dd>
+                  <span class="fact-value">{fact.value}</span>
+                  <span class="fact-label" aria-hidden="true">
+                    {fact.label}
+                  </span>
+                </dd>
+              </div>
+            ))
+          }
+        </dl>
+
+        <div class="interests">
+          <div class="card interest-box">
+            <h3>Favourite languages</h3>
+            <ul role="list">
+              {
+                profile.favLanguages.map((item) => (
+                  <li>
+                    <i class={item.icon} aria-hidden="true" /> {item.name}
+                  </li>
+                ))
+              }
+            </ul>
+          </div>
+          <div class="card interest-box">
+            <h3>Interests</h3>
+            <ul role="list">
+              {
+                profile.interests.map((item) => (
+                  <li>
+                    <i class={item.icon} aria-hidden="true" /> {item.name}
+                  </li>
+                ))
+              }
+            </ul>
+          </div>
+        </div>
+      </div>
+
+      <!-- Brush shape from the old site, recoloured with the accent via a CSS mask -->
+      <div class="portrait" style={`--brush: url(${brushMask.src})`}>
+        <div class="brush" aria-hidden="true"></div>
+        <Image
+          src={person}
+          alt={`Portrait of ${profile.name} in a dark suit, arms crossed`}
+          widths={[360, 540, 720]}
+          sizes="(max-width: 52rem) 70vw, 360px"
+          class="person"
+        />
+      </div>
+    </div>
+
+    <div class="reveal">
+      <h3 class="sub-heading block-title">My <span>Skills</span></h3>
+      <SkillGroups />
+    </div>
+
+    <div class="reveal">
+      <h3 class="sub-heading block-title">Awards &amp; <span>Certificates</span></h3>
+      <Achievements />
+    </div>
+  </div>
+</section>
+
+<style>
+  /* The brush behind the portrait extends past its box; keep it inside the section */
+  #about {
+    overflow-x: clip;
+  }
+
+  .about-grid {
+    display: grid;
+    grid-template-columns: minmax(0, 1.4fr) minmax(0, 1fr);
+    gap: var(--space-7);
+    align-items: center;
+  }
+
+  .about-text p + p {
+    margin-top: var(--space-4);
+  }
+
+  .about-text p {
+    color: var(--muted);
+  }
+
+  .about-text :global(strong) {
+    color: var(--text);
+  }
+
+  .facts {
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: var(--space-4);
+    margin-block: var(--space-6);
+    padding-block: var(--space-5);
+    border-block: 1px solid var(--border);
+  }
+
+  .fact dd {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-1);
+    margin: 0;
+  }
+
+  .fact-value {
+    color: var(--accent);
+    font-size: var(--fs-lg);
+    font-weight: 700;
+    line-height: 1.1;
+  }
+
+  .fact-label {
+    color: var(--muted);
+    font-size: var(--fs-sm);
+    line-height: 1.4;
+  }
+
+  .interests {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: var(--space-4);
+  }
+
+  .interest-box {
+    padding: var(--space-4) var(--space-5);
+  }
+
+  .interest-box h3 {
+    margin-bottom: var(--space-2);
+    font-size: var(--fs-base);
+  }
+
+  .interest-box li {
+    display: flex;
+    align-items: center;
+    gap: var(--space-2);
+    padding-block: var(--space-1);
+    color: var(--muted);
+  }
+
+  .interest-box i {
+    width: 1.25rem;
+    color: var(--accent);
+    text-align: center;
+  }
+
+  .portrait {
+    position: relative;
+    display: grid;
+    place-items: end center;
+    aspect-ratio: 4 / 5;
+    max-width: 24rem;
+    margin-inline: auto;
+    width: 100%;
+  }
+
+  .brush {
+    position: absolute;
+    inset: 15% -15% 5%;
+    background: var(--accent);
+    opacity: 0.85;
+    mask: var(--brush) center / contain no-repeat;
+    -webkit-mask: var(--brush) center / contain no-repeat;
+  }
+
+  .person {
+    position: relative;
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+    object-position: bottom;
+  }
+
+  .block-title {
+    margin-top: var(--space-8);
+    text-align: center;
+  }
+
+  @media (max-width: 52rem) {
+    .about-grid {
+      grid-template-columns: 1fr;
+    }
+
+    .portrait {
+      order: -1;
+      max-width: 18rem;
+    }
+
+    .facts {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+  }
+
+  @media (max-width: 26rem) {
+    .interests {
+      grid-template-columns: 1fr;
+    }
+  }
+</style>

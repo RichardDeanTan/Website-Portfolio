@@ -1,0 +1,289 @@
+---
+import { profile } from '@/data/profile';
+
+const accessKey = import.meta.env.PUBLIC_WEB3FORMS_KEY ?? '';
+const formReady = accessKey.length > 0;
+
+const rows = [
+  { icon: 'fa-solid fa-envelope', label: 'Email', value: profile.email, href: `mailto:${profile.email}`, external: false },
+  { icon: 'fa-brands fa-whatsapp', label: 'WhatsApp', value: profile.phoneDisplay, href: profile.links.whatsapp, external: true },
+  { icon: 'fa-brands fa-linkedin-in', label: 'LinkedIn', value: profile.linkedinDisplay, href: profile.links.linkedin, external: true },
+  { icon: 'fa-brands fa-github', label: 'GitHub', value: profile.githubDisplay, href: profile.links.github, external: true },
+];
+---
+
+<section id="contact" class="alt">
+  <div class="container">
+    <h2 class="heading reveal">Contact <span>Me</span></h2>
+
+    <div class="contact-grid reveal">
+      <div class="info">
+        <h3>Get in touch</h3>
+        <p class="muted">
+          Open to data engineering, data science and AI roles. The quickest way to reach me is email or LinkedIn.
+        </p>
+        <ul role="list" class="rows">
+          {
+            rows.map((row) => (
+              <li>
+                <a
+                  class="card row"
+                  href={row.href}
+                  {...(row.external ? { target: '_blank', rel: 'noopener noreferrer' } : {})}
+                >
+                  <i class={row.icon} aria-hidden="true" />
+                  <span class="row-text">
+                    <span class="row-label">{row.label}</span>
+                    <span class="row-value">{row.value}</span>
+                  </span>
+                </a>
+              </li>
+            ))
+          }
+        </ul>
+      </div>
+
+      <div class="card form-card">
+        <h3>Send me a message</h3>
+
+        <!-- Works without JavaScript too: the browser posts straight to Web3Forms -->
+        <form action="https://api.web3forms.com/submit" method="POST" data-contact-form>
+          <input type="hidden" name="access_key" value={accessKey} />
+          <input type="hidden" name="subject" value="New message from your portfolio" />
+          <input type="hidden" name="from_name" value="Portfolio contact form" />
+          <!-- Honeypot: real visitors never see or tick this, spam bots do -->
+          <input type="checkbox" name="botcheck" class="botcheck" tabindex="-1" autocomplete="off" aria-hidden="true" />
+
+          <div class="field">
+            <label for="contact-name">Name</label>
+            <input id="contact-name" name="name" type="text" autocomplete="name" placeholder="Your name" required />
+          </div>
+          <div class="field">
+            <label for="contact-email">Email</label>
+            <input id="contact-email" name="email" type="email" autocomplete="email" placeholder="email@example.com" required />
+          </div>
+          <div class="field">
+            <label for="contact-message">Message</label>
+            <textarea id="contact-message" name="message" rows="6" placeholder="What would you like to talk about?" required></textarea>
+          </div>
+
+          {
+            !formReady && (
+              <p class="notice">
+                The form isn't connected yet. Please email me at{' '}
+                <a href={`mailto:${profile.email}`}>{profile.email}</a>.
+              </p>
+            )
+          }
+
+          <button type="submit" class="btn btn-primary submit" disabled={!formReady} data-submit>
+            Send message
+          </button>
+          <p class="status" role="status" aria-live="polite" data-status></p>
+        </form>
+      </div>
+    </div>
+  </div>
+</section>
+
+<style>
+  .contact-grid {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1.2fr);
+    gap: var(--space-7);
+    align-items: start;
+  }
+
+  h3 {
+    font-size: var(--fs-lg);
+    margin-bottom: var(--space-3);
+  }
+
+  .rows {
+    display: grid;
+    gap: var(--space-3);
+    margin-top: var(--space-5);
+  }
+
+  .row {
+    display: flex;
+    align-items: center;
+    gap: var(--space-4);
+    padding: var(--space-3) var(--space-4);
+    color: var(--text);
+    text-decoration: none;
+    transition:
+      border-color var(--dur) var(--ease),
+      box-shadow var(--dur) var(--ease);
+  }
+
+  .row:hover,
+  .row:focus-visible {
+    color: var(--text);
+    border-color: var(--accent);
+    box-shadow: var(--glow);
+  }
+
+  .row i {
+    width: 1.5rem;
+    color: var(--accent);
+    font-size: 1.1rem;
+    text-align: center;
+  }
+
+  .row-text {
+    display: flex;
+    flex-direction: column;
+    min-width: 0;
+  }
+
+  .row-label {
+    color: var(--muted);
+    font-size: var(--fs-sm);
+  }
+
+  .row-value {
+    font-weight: 500;
+    overflow-wrap: anywhere;
+  }
+
+  .form-card {
+    padding: var(--space-6);
+  }
+
+  form {
+    display: grid;
+    gap: var(--space-4);
+  }
+
+  .field {
+    display: grid;
+    gap: var(--space-1);
+  }
+
+  label {
+    font-size: var(--fs-sm);
+    font-weight: 500;
+  }
+
+  input,
+  textarea {
+    width: 100%;
+    padding: var(--space-3) var(--space-4);
+    border: 1px solid var(--border-strong);
+    border-radius: var(--radius-card);
+    background: var(--bg);
+    color: var(--text);
+    transition: border-color var(--dur) var(--ease);
+  }
+
+  section.alt .form-card input,
+  section.alt .form-card textarea {
+    background: var(--surface);
+  }
+
+  input::placeholder,
+  textarea::placeholder {
+    color: var(--muted);
+    opacity: 1;
+  }
+
+  input:focus-visible,
+  textarea:focus-visible {
+    border-color: var(--accent);
+    outline-offset: 0;
+  }
+
+  textarea {
+    resize: vertical;
+    min-height: 8rem;
+  }
+
+  .botcheck {
+    display: none;
+  }
+
+  .submit {
+    justify-self: start;
+  }
+
+  .submit:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+    transform: none;
+  }
+
+  .notice {
+    color: var(--muted);
+    font-size: var(--fs-sm);
+  }
+
+  .status {
+    min-height: 1.5em;
+    font-size: var(--fs-sm);
+    font-weight: 500;
+  }
+
+  .status[data-state='success'] {
+    color: var(--accent);
+  }
+
+  .status[data-state='error'] {
+    color: var(--text);
+  }
+
+  @media (max-width: 52rem) {
+    .contact-grid {
+      grid-template-columns: 1fr;
+    }
+  }
+
+  @media (max-width: 30rem) {
+    .form-card {
+      padding: var(--space-4);
+    }
+  }
+</style>
+
+<script>
+  const form = document.querySelector<HTMLFormElement>('[data-contact-form]');
+  const status = form?.querySelector<HTMLElement>('[data-status]');
+  const submit = form?.querySelector<HTMLButtonElement>('[data-submit]');
+  const FALLBACK_EMAIL = 'richardtan2206@gmail.com';
+
+  function setStatus(state: 'idle' | 'sending' | 'success' | 'error', message: string) {
+    if (!status) return;
+    status.dataset.state = state;
+    status.textContent = message;
+  }
+
+  form?.addEventListener('submit', async (e) => {
+    e.preventDefault();
+    if (!form.reportValidity()) return;
+
+    const data = Object.fromEntries(new FormData(form));
+    if (data.botcheck) return; // honeypot ticked: silently drop
+
+    submit?.setAttribute('disabled', '');
+    const originalLabel = submit?.textContent ?? 'Send message';
+    if (submit) submit.textContent = 'Sending…';
+    setStatus('sending', '');
+
+    try {
+      const res = await fetch(form.action, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', Accept: 'application/json' },
+        body: JSON.stringify(data),
+      });
+      const json = (await res.json()) as { success?: boolean; message?: string };
+      if (!res.ok || !json.success) throw new Error(json.message ?? `HTTP ${res.status}`);
+      form.reset();
+      setStatus('success', "Thanks, your message was sent. I'll reply by email soon.");
+    } catch {
+      setStatus('error', `Sorry, the message couldn't be sent. Please email me directly at ${FALLBACK_EMAIL}.`);
+    } finally {
+      submit?.removeAttribute('disabled');
+      if (submit) submit.textContent = originalLabel;
+    }
+  });
+</script>

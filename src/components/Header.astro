@@ -1,0 +1,279 @@
+---
+import { Image } from 'astro:assets';
+import ThemeToggle from './ThemeToggle.astro';
+import { navItems } from '@/data/nav';
+import { profile } from '@/data/profile';
+import profilePhoto from '@/assets/profile.jpeg';
+---
+
+<header class="site-header" data-header>
+  <div class="container header-inner">
+    <a href="#home" class="wordmark">{profile.name}</a>
+
+    <nav id="site-nav" class="site-nav" aria-label="Main" data-nav>
+      <ul role="list">
+        {
+          navItems.map((item) => (
+            <li>
+              <a href={`#${item.id}`} data-nav-link={item.id}>
+                {item.label}
+              </a>
+            </li>
+          ))
+        }
+      </ul>
+    </nav>
+
+    <div class="header-actions">
+      <ThemeToggle />
+      <Image
+        src={profilePhoto}
+        alt=""
+        width={72}
+        height={72}
+        class="header-photo"
+        loading="eager"
+      />
+      <button
+        class="menu-btn"
+        type="button"
+        aria-controls="site-nav"
+        aria-expanded="false"
+        aria-label="Open menu"
+        data-menu-btn
+      >
+        <i class="fa-solid fa-bars" aria-hidden="true"></i>
+      </button>
+    </div>
+  </div>
+</header>
+
+<style>
+  .site-header {
+    position: sticky;
+    top: 0;
+    z-index: 50;
+    height: var(--header-h);
+    background: var(--bg);
+    border-bottom: 1px solid transparent;
+    transition:
+      border-color var(--dur) var(--ease),
+      background-color var(--dur) var(--ease);
+  }
+
+  .site-header[data-scrolled] {
+    border-bottom-color: var(--border);
+  }
+
+  .header-inner {
+    display: flex;
+    align-items: center;
+    gap: var(--space-5);
+    height: 100%;
+  }
+
+  .wordmark {
+    color: var(--text);
+    font-weight: 700;
+    font-size: var(--fs-md);
+    text-decoration: none;
+    white-space: nowrap;
+  }
+
+  .wordmark:hover {
+    color: var(--text);
+  }
+
+  .site-nav ul {
+    display: flex;
+    gap: var(--space-5);
+  }
+
+  .site-nav a {
+    position: relative;
+    display: block;
+    padding-block: var(--space-2);
+    color: var(--muted);
+    font-weight: 500;
+    text-decoration: none;
+    transition: color var(--dur) var(--ease);
+  }
+
+  .site-nav a:hover,
+  .site-nav a[aria-current='true'] {
+    color: var(--text);
+  }
+
+  .site-nav a[aria-current='true']::after {
+    content: '';
+    position: absolute;
+    inset-inline: 0;
+    bottom: 0;
+    height: 2px;
+    background: var(--accent);
+  }
+
+  .header-actions {
+    display: flex;
+    align-items: center;
+    gap: var(--space-3);
+  }
+
+  /*
+    Desktop: name, nav and toggle/photo spread with space-between, so the gap
+    from the name to the nav always equals the gap from the nav to the toggle.
+  */
+  @media (min-width: 60.0625rem) {
+    .header-inner {
+      justify-content: space-between;
+    }
+
+    .header-actions {
+      height: 2rem;
+      padding-inline-start: var(--space-5);
+      border-inline-start: 1px solid var(--border);
+    }
+  }
+
+  .header-photo {
+    width: 2.25rem;
+    height: 2.25rem;
+    border-radius: 50%;
+    object-fit: cover;
+    object-position: top;
+    border: 1px solid var(--border);
+    transition:
+      border-color var(--dur) var(--ease),
+      box-shadow var(--dur) var(--ease);
+  }
+
+  .header-photo:hover {
+    border-color: var(--accent);
+    box-shadow: var(--glow);
+  }
+
+  .menu-btn {
+    display: none;
+    place-items: center;
+    width: 2.5rem;
+    height: 2.5rem;
+    border: 1px solid var(--border);
+    border-radius: var(--radius-card);
+    background: transparent;
+    font-size: 1.1rem;
+  }
+
+  /* Tablet and phone: nav becomes a dropdown panel */
+  @media (max-width: 60rem) {
+    .menu-btn {
+      display: grid;
+    }
+
+    .header-actions {
+      margin-inline-start: auto;
+    }
+
+    .site-nav {
+      position: absolute;
+      top: 100%;
+      inset-inline: 0;
+      display: none;
+      background: var(--bg);
+      border-bottom: 1px solid var(--border);
+    }
+
+    .site-nav[data-open] {
+      display: block;
+    }
+
+    .site-nav ul {
+      flex-direction: column;
+      gap: 0;
+      width: min(100% - 2 * var(--gutter), var(--container));
+      margin-inline: auto;
+      padding-block: var(--space-2) var(--space-4);
+    }
+
+    .site-nav a {
+      padding-block: var(--space-3);
+      font-size: var(--fs-md);
+    }
+
+    .site-nav a[aria-current='true']::after {
+      inset-inline: auto;
+      left: calc(-1 * var(--space-3));
+      top: 50%;
+      bottom: auto;
+      width: 4px;
+      height: 4px;
+      border-radius: 50%;
+      transform: translateY(-50%);
+    }
+  }
+
+  @media (max-width: 26rem) {
+    .header-photo {
+      display: none;
+    }
+  }
+</style>
+
+<script>
+  const header = document.querySelector<HTMLElement>('[data-header]');
+  const nav = document.querySelector<HTMLElement>('[data-nav]');
+  const menuBtn = document.querySelector<HTMLButtonElement>('[data-menu-btn]');
+  const links = [...document.querySelectorAll<HTMLAnchorElement>('[data-nav-link]')];
+
+  // Border under the header once the page has scrolled
+  const onScroll = () => header?.toggleAttribute('data-scrolled', window.scrollY > 8);
+  onScroll();
+  window.addEventListener('scroll', onScroll, { passive: true });
+
+  // Mobile menu
+  function setMenu(open: boolean) {
+    if (!nav || !menuBtn) return;
+    nav.toggleAttribute('data-open', open);
+    menuBtn.setAttribute('aria-expanded', String(open));
+    menuBtn.setAttribute('aria-label', open ? 'Close menu' : 'Open menu');
+    const icon = menuBtn.querySelector('i');
+    icon?.classList.toggle('fa-bars', !open);
+    icon?.classList.toggle('fa-xmark', open);
+  }
+
+  menuBtn?.addEventListener('click', () => setMenu(!nav?.hasAttribute('data-open')));
+  links.forEach((link) => link.addEventListener('click', () => setMenu(false)));
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape' && nav?.hasAttribute('data-open')) {
+      setMenu(false);
+      menuBtn?.focus();
+    }
+  });
+  document.addEventListener('click', (e) => {
+    if (!nav?.hasAttribute('data-open')) return;
+    const target = e.target as Node;
+    if (!nav.contains(target) && !menuBtn?.contains(target)) setMenu(false);
+  });
+
+  // Highlight the nav link of the section in view
+  function setActive(id: string) {
+    links.forEach((link) => {
+      if (link.dataset.navLink === id) link.setAttribute('aria-current', 'true');
+      else link.removeAttribute('aria-current');
+    });
+  }
+
+  const sections = links
+    .map((link) => document.getElementById(link.dataset.navLink ?? ''))
+    .filter((el): el is HTMLElement => el !== null);
+
+  const observer = new IntersectionObserver(
+    (entries) => {
+      entries.forEach((entry) => {
+        if (entry.isIntersecting) setActive(entry.target.id);
+      });
+    },
+    // A section counts as "current" when it crosses a line ~40% down the viewport
+    { rootMargin: '-40% 0px -55% 0px' },
+  );
+  sections.forEach((section) => observer.observe(section));
+</script>

@@ -1,0 +1,86 @@
+---
+// Sun/moon button. The no-flash script in Base.astro sets the initial theme;
+// this only handles clicks and OS changes.
+---
+
+<button class="theme-toggle" type="button" data-theme-toggle aria-label="Switch to dark theme">
+  <i class="fa-solid fa-moon icon-moon" aria-hidden="true"></i>
+  <i class="fa-solid fa-sun icon-sun" aria-hidden="true"></i>
+</button>
+
+<style>
+  .theme-toggle {
+    display: grid;
+    place-items: center;
+    width: 2.5rem;
+    height: 2.5rem;
+    border: 1px solid var(--border);
+    border-radius: var(--radius-card);
+    background: transparent;
+    color: var(--text);
+    font-size: 1rem;
+    transition:
+      border-color var(--dur) var(--ease),
+      box-shadow var(--dur) var(--ease);
+  }
+
+  .theme-toggle:hover,
+  .theme-toggle:focus-visible {
+    border-color: var(--accent);
+    box-shadow: var(--glow);
+  }
+
+  .icon-sun {
+    display: none;
+  }
+
+  :global([data-theme='dark']) .icon-sun {
+    display: inline;
+  }
+
+  :global([data-theme='dark']) .icon-moon {
+    display: none;
+  }
+</style>
+
+<script>
+  type Theme = 'light' | 'dark';
+  const root = document.documentElement;
+  const media = window.matchMedia('(prefers-color-scheme: dark)');
+
+  function hasSavedChoice(): boolean {
+    try {
+      return localStorage.getItem('theme') !== null;
+    } catch {
+      return false;
+    }
+  }
+
+  function apply(theme: Theme, save: boolean) {
+    root.dataset.theme = theme;
+    if (save) {
+      try {
+        localStorage.setItem('theme', theme);
+      } catch {
+        /* storage blocked: the choice lasts for this visit only */
+      }
+    }
+    const next = theme === 'dark' ? 'light' : 'dark';
+    document.querySelectorAll<HTMLButtonElement>('[data-theme-toggle]').forEach((btn) => {
+      btn.setAttribute('aria-label', `Switch to ${next} theme`);
+    });
+  }
+
+  apply(root.dataset.theme === 'dark' ? 'dark' : 'light', false);
+
+  document.querySelectorAll<HTMLButtonElement>('[data-theme-toggle]').forEach((btn) => {
+    btn.addEventListener('click', () => {
+      apply(root.dataset.theme === 'dark' ? 'light' : 'dark', true);
+    });
+  });
+
+  // Follow the OS only until the visitor picks a theme themselves.
+  media.addEventListener('change', (e) => {
+    if (!hasSavedChoice()) apply(e.matches ? 'dark' : 'light', false);
+  });
+</script>

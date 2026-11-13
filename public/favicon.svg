@@ -1,0 +1,5 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64">
+  <rect width="64" height="64" rx="14" fill="#0b6fb0"/>
+  <!-- Bold "R" drawn as a path so it looks the same without any font installed -->
+  <path fill="#ffffff" fill-rule="evenodd" d="M18 14H34A11 11 0 0 1 38.5 35L47 50H37L29.5 36H27V50H18ZM27 21.5H33.5A3.5 3.5 0 0 1 33.5 28.5H27Z"/>
+</svg>
