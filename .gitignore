@@ -26,6 +26,7 @@ Test/
 
 # Claude Code local settings (dev-server launcher; not part of the site)
 .claude/
+CLAUDE.md
 
 # old GitHub Pages site, kept locally for reference only
 # (it already lives in the Personal-Portfolio repo)
